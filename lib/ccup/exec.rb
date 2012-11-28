@@ -1,5 +1,7 @@
 module Ccup
   class Exec
+
+    attr_reader :submission, :input_folder, :output_file, :answer_key
     BANNER = <<-MSG
 
 Usage
@@ -18,6 +20,10 @@ Description
 
 MSG
     def initialize(argv)
+      @submission = argv[0]
+      @input_folder = argv[1]
+      @output_file = argv[2]
+      @answer_key = argv[3]
       $stderr.puts BANNER
     end
   end
