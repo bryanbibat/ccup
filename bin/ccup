@@ -4,4 +4,4 @@ require 'ccup'
 
 c = Ccup::Exec.new(ARGV)
 c.process unless c.error
-`nautilus #{c.temp_folder}`
+`nautilus #{c.temp_folder}` if c.temp_folder

@@ -1,4 +1,5 @@
 require 'open4'
+require 'tmpdir'
 
 module Ccup
   class Exec
