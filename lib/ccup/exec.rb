@@ -3,7 +3,7 @@ require 'open4'
 module Ccup
   class Exec
 
-    attr_reader :submission, :input_folder, :output_file, :answer_key, :error
+    attr_reader :submission, :input_folder, :output_file, :answer_key, :error, :temp_folder
     BANNER = <<-MSG
 
 Usage
@@ -37,26 +37,32 @@ MSG
 
     def determine_pl(ext)
       case ext
-      when "rb"
+      when ".rb"
         :ruby
       end
     end
 
     def process
-      temp_folder = prepare_temp_folder
-      Dir.chdir temp_folder do 
+      @temp_folder = prepare_temp_folder
+      Dir.chdir @temp_folder do 
         @results_file = File.open("results.txt", "w")
         compile
         run
         compare
+        @results_file.puts "Verification finished."
+        @results_file.close
       end
+      return self
     end
 
     def prepare_temp_folder
       temp_folder = Dir.mktmpdir
       FileUtils.cp @submission, temp_folder
-      FileUtils.cp Dir.entries(@input_folder).reject { |x| File.directory? x }, temp_folder
+      Dir.chdir @input_folder do
+        FileUtils.cp Dir.entries(".").reject { |x| File.directory? x }, temp_folder
+      end
       FileUtils.cp @answer_key, temp_folder
+      `touch #{File.join temp_folder, @output_file}`
       temp_folder
     end
 
@@ -72,12 +78,22 @@ MSG
       when :ruby
         "ruby #{@submission_file}"
       end
-      @output_file.puts "Running submission..."
+      @results_file.puts "Running submission..."
       start_at = Time.now
       pid, stdin, stdout, stderr = Open4::popen4 command
-
       ignored, status = Process::waitpid2 pid
-      @output_file.puts "Execution time: #{(Time.now - start_at) * 1000.0 }"
+
+      #TODO check status
+      @results_file.puts "Execution time: #{ Time.now - start_at } seconds"
+    end
+
+    def compare
+      @results_file.puts "Comparing output with answer key..."
+      puts "diff #{@output_file} #{File.basename @answer_key}"
+      pid, stdin, stdout, stderr = Open4::popen4 "diff #{@output_file} #{File.basename @answer_key}"
+      ignored, status = Process::waitpid2 pid
+
+      @results_file.puts stdout.read.strip
     end
 
   end

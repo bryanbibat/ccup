@@ -1,9 +1,11 @@
 require 'spec_helper'
 
 valid_submission = "./spec/files/submission.rb"
-valid_input_folder = "./spec/files/input/"
-valid_output = "./spec/files/output.txt"
+valid_input_folder = "./spec/files/input"
+valid_output = "output.txt"
 valid_answer_key = "./spec/files/answer_key.txt"
+
+incorrect_submission = "./spec/files/wrong_submission.rb"
 
 valid_values = [valid_submission, valid_input_folder, valid_output, valid_answer_key]
 
@@ -31,7 +33,10 @@ describe Ccup::Exec do
   describe "correct input" do
     it "should not return with error" do
       error = capture(:stderr) do 
-        Ccup::Exec.new(valid_values).error.should_not be true
+        c = Ccup::Exec.new(valid_values)
+        c.error.should_not be true
+        c.process 
+        5.should == IO.readlines(File.join(c.temp_folder, "results.txt")).size
       end
       error.should_not == Ccup::Exec::BANNER
     end
@@ -46,5 +51,14 @@ describe Ccup::Exec do
     its(:output_file) { should == valid_output }
     its(:answer_key) { should == valid_answer_key }
 
+  end
+
+  describe "incorrect input" do
+    it "should produce a large result file" do
+      invalid_values = Array.new(valid_values)
+      invalid_values[0] = incorrect_submission
+      c = Ccup::Exec.new(invalid_values).process
+      5.should < IO.readlines(File.join(c.temp_folder, "results.txt")).size
+    end
   end
 end
