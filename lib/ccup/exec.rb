@@ -37,8 +37,24 @@ MSG
 
     def determine_pl(ext)
       case ext
+      when ".c"
+        :c
+      when ".cpp"
+        :cpp
+      when ".cs"
+        :csharp
+      when ".java"
+        :java
+      when ".php"
+        :php
+      when ".vb"
+        :vbnet
       when ".rb"
         :ruby
+      when ".py"
+        :python
+      when ".js"
+        :js
       end
     end
 
@@ -67,16 +83,36 @@ MSG
     end
 
     def compile
-      case @pl
-      when :ruby
-        # do nothing
+      command = case @pl
+      when :c
+        "gcc -Wall #{@submission_file} -o #{root_name}"
+      when :cpp
+        "g++ -Wall #{@submission_file} -o #{root_name}"
+      when :csharp
+        "gmcs #{@submission_file}"
+      when :java
+        "javac #{@submission_file}"
+      when :vbnet
+        "vbnc #{@submission_file}"
       end
     end
 
     def run
       command = case @pl
+      when :c, :cpp
+        "./#{root_name}"
+      when :csharp, :vbnet
+        "mono #{root_name}.exe"
+      when :java
+        "java #{root_name}"
       when :ruby
         "ruby #{@submission_file}"
+      when :python
+        "python #{@submission_file}"
+      when :php
+        "php #{@submission_file}"
+      when :js
+        "node #{@submission_file}"
       end
       @results_file.puts "Running submission..."
       start_at = Time.now
@@ -85,6 +121,10 @@ MSG
 
       #TODO check status
       @results_file.puts "Execution time: #{ Time.now - start_at } seconds"
+    end
+
+    def root_name
+      File.basename(@submission_file, File.extname(@submission_file))
     end
 
     def compare
