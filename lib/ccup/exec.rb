@@ -17,7 +17,7 @@ Description
 
   Verification will be done by running "diff" on OUTPUT_FILE and ANSWER_KEY_FILE
   and putting the results into result.txt on the same folder. The running time
-  as calculated by "time" will also be added to result.txt.
+  will also be added to result.txt.
 
   The program ends with displaying the temporary folder.
 
