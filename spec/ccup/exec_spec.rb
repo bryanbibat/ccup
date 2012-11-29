@@ -14,10 +14,12 @@ compile_error_submission = "./spec/files/SubmissionError.java"
 valid_python = "./spec/files/submission.py"
 valid_java = "./spec/files/Submission.java"
 
+incorrect_c = "./spec/files/hello.c"
 incorrect_cpp = "./spec/files/hello.cpp"
 incorrect_cs = "./spec/files/hello.cs"
 incorrect_vb = "./spec/files/hello.vb"
 incorrect_php = "./spec/files/hello.php"
+incorrect_js = "./spec/files/hello.js"
 
 valid_values = [valid_submission, valid_input_folder, valid_output, valid_answer_key]
 
@@ -163,6 +165,12 @@ describe Ccup::Exec do
       "ERROR ENCOUNTERED:".should == IO.readlines(File.join(c.temp_folder, "results.txt"))[1].strip
     end
 
+    it "should fail on incorrect C" do
+      invalid_values = [incorrect_c] + valid_values[1,3]
+      c = Ccup::Exec.new(invalid_values).process
+      6.should < IO.readlines(File.join(c.temp_folder, "results.txt")).size
+    end
+
     it "should fail on incorrect C++" do
       invalid_values = [incorrect_cpp] + valid_values[1,3]
       c = Ccup::Exec.new(invalid_values).process
@@ -183,6 +191,12 @@ describe Ccup::Exec do
 
     it "should fail on incorrect PHP" do
       invalid_values = [incorrect_php] + valid_values[1,3]
+      c = Ccup::Exec.new(invalid_values).process
+      5.should < IO.readlines(File.join(c.temp_folder, "results.txt")).size
+    end
+
+    it "should fail on incorrect JS" do
+      invalid_values = [incorrect_js] + valid_values[1,3]
       c = Ccup::Exec.new(invalid_values).process
       5.should < IO.readlines(File.join(c.temp_folder, "results.txt")).size
     end
