@@ -6,6 +6,7 @@ valid_output = "output.txt"
 valid_answer_key = "./spec/files/answer_key.txt"
 
 incorrect_submission = "./spec/files/wrong_submission.rb"
+valid_python = "./spec/files/submission.py"
 
 valid_values = [valid_submission, valid_input_folder, valid_output, valid_answer_key]
 
@@ -40,6 +41,27 @@ describe Ccup::Exec do
       end
       error.should_not == Ccup::Exec::BANNER
     end
+
+    it "should not return with error" do
+      error = capture(:stderr) do 
+        c = Ccup::Exec.new(valid_values)
+        c.error.should_not be true
+        c.process 
+        5.should == IO.readlines(File.join(c.temp_folder, "results.txt")).size
+      end
+      error.should_not == Ccup::Exec::BANNER
+    end
+
+    it "for python should not return with error" do
+      error = capture(:stderr) do 
+        python_values = [valid_python] + valid_values[1,3]
+        c = Ccup::Exec.new(python_values)
+        c.error.should_not be true
+        c.process 
+        5.should == IO.readlines(File.join(c.temp_folder, "results.txt")).size
+      end
+      error.should_not == Ccup::Exec::BANNER
+    end
   end
 
   describe "initial load" do
@@ -55,8 +77,7 @@ describe Ccup::Exec do
 
   describe "incorrect input" do
     it "should produce a large result file" do
-      invalid_values = Array.new(valid_values)
-      invalid_values[0] = incorrect_submission
+      invalid_values = [incorrect_submission] + valid_values[1,3]
       c = Ccup::Exec.new(invalid_values).process
       5.should < IO.readlines(File.join(c.temp_folder, "results.txt")).size
     end
