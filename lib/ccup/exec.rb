@@ -63,8 +63,12 @@ MSG
       Dir.chdir @temp_folder do 
         @results_file = File.open("results.txt", "w")
         compile
-        run
-        compare
+        unless @error
+          run
+        end
+        unless @error
+          compare
+        end
         @results_file.puts "Verification finished."
         @results_file.close
       end
@@ -118,7 +122,12 @@ MSG
       start_at = Time.now
       pid, stdin, stdout, stderr = Open4::popen4 command
       ignored, status = Process::waitpid2 pid
-
+      
+      unless status.exitstatus == 0
+        @error = true
+        @results_file.puts "ERROR ENCOUNTERED:"
+        @results_file.puts stderr.read.strip
+      end
       #TODO check status
       @results_file.puts "Execution time: #{ Time.now - start_at } seconds"
     end

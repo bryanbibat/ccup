@@ -6,6 +6,7 @@ valid_output = "output.txt"
 valid_answer_key = "./spec/files/answer_key.txt"
 
 incorrect_submission = "./spec/files/wrong_submission.rb"
+error_submission = "./spec/files/error_submission.rb"
 valid_python = "./spec/files/submission.py"
 
 valid_values = [valid_submission, valid_input_folder, valid_output, valid_answer_key]
@@ -80,6 +81,12 @@ describe Ccup::Exec do
       invalid_values = [incorrect_submission] + valid_values[1,3]
       c = Ccup::Exec.new(invalid_values).process
       5.should < IO.readlines(File.join(c.temp_folder, "results.txt")).size
+    end
+
+    it "should stop on runtime error" do
+      invalid_values = [error_submission] + valid_values[1,3]
+      c = Ccup::Exec.new(invalid_values).process
+      "ERROR ENCOUNTERED:".should == IO.readlines(File.join(c.temp_folder, "results.txt"))[1].strip
     end
   end
 end
