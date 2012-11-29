@@ -31,8 +31,18 @@ MSG
       @input_folder = argv[1]
       @output_file = argv[2]
       @answer_key = argv[3]
-      @submission_file = File.basename(@submission)
-      @pl = determine_pl(File.extname(@submission))
+      unless @error
+        @submission_file = File.basename(@submission)
+        validate
+        @pl = determine_pl(File.extname(@submission))
+      end
+    end
+
+    def validate
+      unless File.exist? @submission
+        @error = true
+        $stderr.puts "Can't find #{@submission_file}"
+      end
     end
 
     def determine_pl(ext)
@@ -55,10 +65,14 @@ MSG
         :python
       when ".js"
         :js
+      else
+        @error = true
+        $stderr.puts "Invalid submission"
       end
     end
 
     def process
+      return if @error
       @temp_folder = prepare_temp_folder
       Dir.chdir @temp_folder do 
         @results_file = File.open("results.txt", "w")
@@ -123,7 +137,7 @@ MSG
         "ruby #{@submission_file}"
       when :python
         "python #{@submission_file}"
-      when :php
+      when :phpFile.e
         "php #{@submission_file}"
       when :js
         "node #{@submission_file}"
@@ -148,7 +162,6 @@ MSG
 
     def compare
       @results_file.puts "Comparing output with answer key..."
-      puts "diff #{@output_file} #{File.basename @answer_key}"
       pid, stdin, stdout, stderr = Open4::popen4 "diff #{@output_file} #{File.basename @answer_key}"
       ignored, status = Process::waitpid2 pid
 

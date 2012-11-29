@@ -7,6 +7,7 @@ valid_answer_key = "./spec/files/answer_key.txt"
 
 incorrect_submission = "./spec/files/wrong_submission.rb"
 error_submission = "./spec/files/error_submission.rb"
+missing_submission = "./spec/files/missing.rb"
 compile_error_submission = "./spec/files/SubmissionError.java"
 valid_python = "./spec/files/submission.py"
 valid_java = "./spec/files/Submission.java"
@@ -90,6 +91,25 @@ describe Ccup::Exec do
   end
 
   describe "incorrect input" do
+
+    it "should stop on missing files" do
+      error = capture(:stderr) do 
+        invalid_values = [missing_submission] + valid_values[1,3]
+        c = Ccup::Exec.new(invalid_values)
+        c.error.should == true
+      end
+      error.strip.should == "Can't find missing.rb"
+    end
+
+    it "should stop on non-programs" do
+      error = capture(:stderr) do 
+        invalid_values = [valid_answer_key] + valid_values[1,3]
+        c = Ccup::Exec.new(invalid_values)
+        c.error.should == true
+      end
+      error.strip.should == "Invalid submission"
+    end
+
     it "should produce a large result file" do
       invalid_values = [incorrect_submission] + valid_values[1,3]
       c = Ccup::Exec.new(invalid_values).process
