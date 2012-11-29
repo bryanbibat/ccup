@@ -19,7 +19,7 @@ Description
   and putting the results into result.txt on the same folder. The running time
   as calculated by "time" will also be added to result.txt.
 
-  The program ends with displaying the contents of result.txt.
+  The program ends with displaying the temporary folder.
 
 MSG
     def initialize(argv)

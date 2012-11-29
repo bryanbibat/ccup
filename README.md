@@ -18,7 +18,17 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+    $ ccup SUBMISSION_FILE INPUT_FOLDER OUTPUT_FILE ANSWER_KEY_FILE
+
+Creates a temporary directory and copies SUBMISSION\_FILE, the files inside
+INPUT\_FOLDER, and ANSWER\_KEY\_FILE into it before compiling (if needed) and
+executing the SUBMISSION\_FILE.
+
+Verification will be done by running "diff" on OUTPUT\_FILE and ANSWER\_KEY\_FILE
+and putting the results into result.txt on the same folder. The running time
+as calculated by "time" will also be added to result.txt.
+
+The program ends with displaying the temporary folder.
 
 ## Contributing
 
