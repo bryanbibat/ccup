@@ -146,7 +146,7 @@ MSG
         "ruby #{@submission_file}"
       when :python
         "python #{@submission_file}"
-      when :phpFile.e
+      when :php
         "php #{@submission_file}"
       when :js
         "node #{@submission_file}"
