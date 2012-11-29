@@ -1,6 +1,6 @@
 # Ccup
 
-TODO: Write a gem description
+Verification tool for DevCon Code Challenge Cup
 
 ## Installation
 
