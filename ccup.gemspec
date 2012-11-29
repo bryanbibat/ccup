@@ -8,8 +8,8 @@ Gem::Specification.new do |gem|
   gem.version       = Ccup::VERSION
   gem.authors       = ["Bryan Bibat"]
   gem.email         = ["bry@bryanbibat.net"]
-  gem.description   = %q{TODO: Write a gem description}
-  gem.summary       = %q{TODO: Write a gem summary}
+  gem.description   = %q{Verification tool for DevCon Code Challenge Cup}
+  gem.summary       = %q{This automates stuff.}
   gem.homepage      = ""
 
   gem.files         = `git ls-files`.split($/)
