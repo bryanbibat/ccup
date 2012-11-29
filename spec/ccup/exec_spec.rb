@@ -7,7 +7,9 @@ valid_answer_key = "./spec/files/answer_key.txt"
 
 incorrect_submission = "./spec/files/wrong_submission.rb"
 error_submission = "./spec/files/error_submission.rb"
+compile_error_submission = "./spec/files/SubmissionError.java"
 valid_python = "./spec/files/submission.py"
+valid_java = "./spec/files/Submission.java"
 
 valid_values = [valid_submission, valid_input_folder, valid_output, valid_answer_key]
 
@@ -63,6 +65,17 @@ describe Ccup::Exec do
       end
       error.should_not == Ccup::Exec::BANNER
     end
+
+    it "for java should not return with error" do
+      error = capture(:stderr) do 
+        java_values = [valid_java] + valid_values[1,3]
+        c = Ccup::Exec.new(java_values)
+        c.error.should_not be true
+        c.process 
+        6.should == IO.readlines(File.join(c.temp_folder, "results.txt")).size
+      end
+      error.should_not == Ccup::Exec::BANNER
+    end
   end
 
   describe "initial load" do
@@ -81,6 +94,12 @@ describe Ccup::Exec do
       invalid_values = [incorrect_submission] + valid_values[1,3]
       c = Ccup::Exec.new(invalid_values).process
       5.should < IO.readlines(File.join(c.temp_folder, "results.txt")).size
+    end
+
+    it "should stop on compiler error" do
+      invalid_values = [compile_error_submission] + valid_values[1,3]
+      c = Ccup::Exec.new(invalid_values).process
+      "ERROR ENCOUNTERED:".should == IO.readlines(File.join(c.temp_folder, "results.txt"))[1].strip
     end
 
     it "should stop on runtime error" do

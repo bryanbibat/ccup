@@ -69,7 +69,7 @@ MSG
         unless @error
           compare
         end
-        @results_file.puts "Verification finished."
+        @results_file.puts "Done."
         @results_file.close
       end
       return self
@@ -98,6 +98,16 @@ MSG
         "javac #{@submission_file}"
       when :vbnet
         "vbnc #{@submission_file}"
+      end
+      if command
+        @results_file.puts "Compiling submission..."
+        pid, stdin, stdout, stderr = Open4::popen4 command
+        ignored, status = Process::waitpid2 pid
+        unless status.exitstatus == 0
+          @error = true
+          @results_file.puts "ERROR ENCOUNTERED:"
+          @results_file.puts stderr.read.strip
+        end
       end
     end
 
