@@ -41,7 +41,15 @@ MSG
     def validate
       unless File.exist? @submission
         @error = true
-        $stderr.puts "Can't find #{@submission_file}"
+        $stderr.puts "Can't find #{@submission}"
+      end
+      unless Dir.exist? @input_folder
+        @error = true
+        $stderr.puts "Can't find #{@input_folder}"
+      end
+      unless File.exist? @answer_key
+        @error = true
+        $stderr.puts "Can't find #{@answer_key}"
       end
     end
 

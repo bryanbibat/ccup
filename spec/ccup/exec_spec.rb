@@ -8,6 +8,8 @@ valid_answer_key = "./spec/files/answer_key.txt"
 incorrect_submission = "./spec/files/wrong_submission.rb"
 error_submission = "./spec/files/error_submission.rb"
 missing_submission = "./spec/files/missing.rb"
+missing_input_folder = "./spec/files/inputx"
+missing_answer_key = "./spec/files/answer_keyx.txt"
 compile_error_submission = "./spec/files/SubmissionError.java"
 valid_python = "./spec/files/submission.py"
 valid_java = "./spec/files/Submission.java"
@@ -92,13 +94,31 @@ describe Ccup::Exec do
 
   describe "incorrect input" do
 
-    it "should stop on missing files" do
+    it "should stop on missing submission files" do
       error = capture(:stderr) do 
         invalid_values = [missing_submission] + valid_values[1,3]
         c = Ccup::Exec.new(invalid_values)
         c.error.should == true
       end
-      error.strip.should == "Can't find missing.rb"
+      error.strip.should == "Can't find #{missing_submission}"
+    end
+
+    it "should stop on missing input folder" do
+      error = capture(:stderr) do 
+        invalid_values = [valid_values[0], missing_input_folder] + valid_values[2,2]
+        c = Ccup::Exec.new(invalid_values)
+        c.error.should == true
+      end
+      error.strip.should == "Can't find #{missing_input_folder}"
+    end
+
+    it "should stop on missing answer key" do
+      error = capture(:stderr) do 
+        invalid_values = valid_values[0,3] + [missing_answer_key]
+        c = Ccup::Exec.new(invalid_values)
+        c.error.should == true
+      end
+      error.strip.should == "Can't find #{missing_answer_key}"
     end
 
     it "should stop on non-programs" do
